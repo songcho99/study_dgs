@@ -1,4 +1,7 @@
 spring:
+  graphql:
+    websocket:
+      path: graphql
   jpa:
     defer-datasource-initialization: true
     hibernate:

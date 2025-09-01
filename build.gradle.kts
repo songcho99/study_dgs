@@ -1,23 +1,19 @@
 plugins {
-	kotlin("jvm") version "1.9.25"
-	kotlin("plugin.spring") version "1.9.25"
-	kotlin("plugin.jpa") version "1.9.25"
+	kotlin("jvm") version "2.0.21"
+	kotlin("plugin.spring") version "2.0.21"
+	kotlin("plugin.jpa") version "2.0.21"
 	id("org.springframework.boot") version "3.5.5"
 	id("io.spring.dependency-management") version "1.1.7"
+	id ("com.netflix.dgs.codegen") version "7.0.3"
 }
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 description = "Demo project for Spring Boot"
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 allOpen {
 	annotation("jakarta.persistence.Entity")
-}
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
 }
 
 repositories {
@@ -56,4 +52,11 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.generateJava {
+	language = "KOTLIN"
+	typeMapping = mutableMapOf(
+		"ID" to "Long"
+	)
 }
