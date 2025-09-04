@@ -1,12 +1,11 @@
-package com.example.study_dgs.dataFetchers
+package com.example.study_dgs.datafetchers
 
+import com.example.study_dgs.entities.Review
 import com.example.study_dgs.entities.User
 import com.example.study_dgs.repositories.UserRepository
+import com.netflix.dgs.codegen.generated.DgsConstants
 import com.netflix.dgs.codegen.generated.types.AddUserInput
-import com.netflix.graphql.dgs.DgsComponent
-import com.netflix.graphql.dgs.DgsMutation
-import com.netflix.graphql.dgs.DgsQuery
-import com.netflix.graphql.dgs.InputArgument
+import com.netflix.graphql.dgs.*
 
 @DgsComponent
 class UserDataFetcher(private val userRepository: UserRepository) {
@@ -27,5 +26,13 @@ class UserDataFetcher(private val userRepository: UserRepository) {
             email = input.email
         )
        return userRepository.save(user)
+    }
+
+    @DgsData(parentType = DgsConstants.REVIEW.TYPE_NAME, field = DgsConstants.REVIEW.User)
+    fun getUserByReview(
+        dfe: DgsDataFetchingEnvironment
+    ): User {
+        val review = dfe.getSourceOrThrow<Review>()
+        return userRepository.findById(review.user?.id!!).get()
     }
 }

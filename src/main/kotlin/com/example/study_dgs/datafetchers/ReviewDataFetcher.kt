@@ -1,13 +1,12 @@
-package com.example.study_dgs.dataFetchers
+package com.example.study_dgs.datafetchers
 
+import com.example.study_dgs.entities.Movie
 import com.example.study_dgs.entities.Review
+import com.example.study_dgs.entities.User
 import com.example.study_dgs.repositories.ReviewRepository
+import com.netflix.dgs.codegen.generated.DgsConstants
 import com.netflix.dgs.codegen.generated.types.AddReviewInput
-import com.netflix.graphql.dgs.DgsComponent
-import com.netflix.graphql.dgs.DgsMutation
-import com.netflix.graphql.dgs.DgsSubscription
-import com.netflix.graphql.dgs.InputArgument
-import jakarta.persistence.Id
+import com.netflix.graphql.dgs.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
 import reactor.util.concurrent.Queues
@@ -50,5 +49,22 @@ class ReviewDataFetcher(
     ): Flux<Review> {
         return reviewSink.asFlux()
             .filter { it.movie?.id == movieId }
+    }
+
+    @DgsData(parentType = DgsConstants.MOVIE.TYPE_NAME, field = DgsConstants.MOVIE.Reviews)
+    fun getReviewsByMovie(
+        dfe: DgsDataFetchingEnvironment
+    ): List<Review> {
+        val movie = dfe.getSourceOrThrow<Movie>()
+
+        return reviewRepository.findByMovieId(movie.id!!)
+    }
+
+    @DgsData(parentType = DgsConstants.USER.TYPE_NAME, field = DgsConstants.USER.Reviews)
+    fun getReviewsByUser(
+        dfe: DgsDataFetchingEnvironment
+    ): List<Review> {
+        val user = dfe.getSourceOrThrow<User>()
+        return reviewRepository.findByUserId(user.id!!)
     }
 }

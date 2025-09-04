@@ -4,4 +4,5 @@ import com.example.study_dgs.entities.Movie
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface MovieRepository: JpaRepository<Movie, Long> {
+    fun findByDirectorId(directorId: Long): List<Movie>
 }

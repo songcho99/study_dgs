@@ -1,11 +1,10 @@
-package com.example.study_dgs.dataFetchers
+package com.example.study_dgs.datafetchers
 
+import com.example.study_dgs.entities.Director
 import com.example.study_dgs.entities.Movie
 import com.example.study_dgs.repositories.MovieRepository
-import com.netflix.graphql.dgs.DgsComponent
-import com.netflix.graphql.dgs.DgsData
-import com.netflix.graphql.dgs.DgsQuery
-import com.netflix.graphql.dgs.InputArgument
+import com.netflix.dgs.codegen.generated.DgsConstants
+import com.netflix.graphql.dgs.*
 
 @DgsComponent
 class MovieDataFetcher(
@@ -23,5 +22,13 @@ class MovieDataFetcher(
         @InputArgument movieId: Long
     ): Movie {
         return movieRepository.findById(movieId).orElseThrow {Exception("Movie not found")}
+    }
+
+    @DgsData(parentType = DgsConstants.DIRECTOR.TYPE_NAME, field = DgsConstants.DIRECTOR.Movies)
+    fun getMovieByDirector(
+        dfe: DgsDataFetchingEnvironment
+    ): List<Movie> {
+        val director = dfe.getSourceOrThrow<Director>()
+        return movieRepository.findByDirectorId(director.id!!)
     }
 }
